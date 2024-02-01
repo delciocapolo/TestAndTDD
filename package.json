@@ -4,7 +4,7 @@
   "description": "Learning and applying test in web apps usig jest, sqlite and tdd",
   "main": "src/index.ts",
   "scripts": {
-    "test": "jest",
+    "test": "npx jest --no-cache",
     "dev": "tsnd --respawn src/index.ts --ignore-watch ./node_modules"
   },
   "repository": {

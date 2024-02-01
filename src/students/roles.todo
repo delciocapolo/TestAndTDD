@@ -1,0 +1,5 @@
+# Regras de negocio
+Regras: 
+    [] Devemos conseguir somar as notas dos alunos
+    [] Caso uma nota for zero, a nota deve retornar zero
+    [] Caso o aluno tenha +5 notas a soma deve ser multiplicada por 2
