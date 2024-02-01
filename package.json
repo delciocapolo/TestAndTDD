@@ -1,0 +1,31 @@
+{
+  "name": "testandtdd",
+  "version": "0.0.1",
+  "description": "Learning and applying test in web apps usig jest, sqlite and tdd",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/delciocapolo/TestAndTDD.git"
+  },
+  "keywords": [
+    "Jest",
+    "Test",
+    "TDD",
+    "SQLite"
+  ],
+  "author": "Delcio Capolo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/delciocapolo/TestAndTDD/issues"
+  },
+  "homepage": "https://github.com/delciocapolo/TestAndTDD#readme",
+  "devDependencies": {
+    "@prisma/client": "^5.9.1",
+    "jest": "^29.7.0",
+    "prisma": "^5.9.1",
+    "ts-node-dev": "^2.0.0"
+  }
+}
