@@ -1,0 +1,40 @@
+# Regras de negocio
+Regras: 
+    [x] cadastrar provedor
+    [x] cadastrar carro(que provedor pretenda vender)
+    [x] cadastrar consumidor ou comprador
+    [x] promover um carro
+    [] vender carro
+
+Features:
+    Car:
+        [x] number plate/id
+        [x] name 
+        [x] model
+        [x] release at
+        [x] price
+        [x] description
+        [x] sold 
+        [x] createdAt
+        [x] updatedAt 
+        [x] sale
+        [x] discountAmount
+        [x] list of the providers 
+        [x] list of the buyers
+    Provider:
+        [x] id
+        [x] name 
+        [x] email
+        [x] adress bank
+        [x] createdAt
+        [x] updatedAt
+        [x] list of the cars
+    Buyer:
+        [x] id  
+        [x] name 
+        [x] email
+        [x] count car
+        [x] saled
+        [x] createdAt
+        [x] updatedAt
+        [x] list of the cars purchased   

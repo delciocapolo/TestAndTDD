@@ -14,6 +14,13 @@
 ts-jest can create the configuration file for you automatically: <br> 
 <code>npx ts-jest config:init</code>
 
+### Creatign database using Prisma, using SQLite
+1. npx prisma init --datasource-provider sqlite
+1.1 This creates a new prisma directory with your Prisma schema file and configures SQLite as your database.
+2. npx prisma format -- *optional*
+3. npx prisma generate
+4. npx prisma db push
+
 ## Links:
 1. Installing Jest, ts-jest: <br>
 1.1 [Getting started](https://jestjs.io/pt-BR/docs/getting-started) <br>

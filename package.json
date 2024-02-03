@@ -5,7 +5,8 @@
   "main": "src/index.ts",
   "scripts": {
     "test": "npx jest --no-cache",
-    "dev": "tsnd --respawn src/index.ts --ignore-watch ./node_modules"
+    "dev": "tsnd --respawn src/stand/stand.ts --ignore-watch ./node_modules",
+    "syncdb": "npx prisma generate && npx prisma db push"
   },
   "repository": {
     "type": "git",

@@ -1,0 +1,64 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model provider {
+  id         Int      @id @default(autoincrement())
+  name       String   @unique
+  email      String   @unique
+  adressBank String   @unique
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  cars       car[]
+}
+
+model car {
+  numberPlate    String    @id @default(cuid())
+  name           String
+  model          String
+  releaseAt      String?
+  price          Float
+  description    String?   @default("")
+  sold           Boolean   @default(false)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  // notes for update function
+  sale           Boolean?  @default(false)
+  discountAmount Float?
+  // relation tables
+  providers      provider  @relation(fields: [providerId], references: [id])
+  providerId     Int
+  buyers         buyer[]
+  soldCars       soldCar[]
+}
+
+model buyer {
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  email     String    @unique
+  countCar  Int       @default(1)
+  saled     Boolean?  @default(false)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  cars      car       @relation(fields: [carId], references: [numberPlate])
+  carId     String
+  soldCars  soldCar[]
+}
+
+model soldCar {
+  id      Int    @id @default(autoincrement())
+  buyers  buyer  @relation(fields: [buyerId], references: [id])
+  buyerId Int
+  cars    car    @relation(fields: [carId], references: [numberPlate])
+  carId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
