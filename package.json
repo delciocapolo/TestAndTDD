@@ -4,8 +4,8 @@
   "description": "Learning and applying test in web apps usig jest, sqlite and tdd",
   "main": "src/index.ts",
   "scripts": {
-    "test": "npx jest --no-cache",
-    "dev": "tsnd --respawn src/stand/stand.ts --ignore-watch ./node_modules",
+    "test": "NODE_DEBUG=database-stand,test npx jest --watch --no-cache",
+    "dev": "NODE_DEBUG=database-stand tsnd --respawn src/util/encrypt.ts --ignore-watch ./node_modules",
     "syncdb": "npx prisma generate && npx prisma db push"
   },
   "repository": {

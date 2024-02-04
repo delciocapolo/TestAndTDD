@@ -32,7 +32,7 @@ model car {
   updatedAt      DateTime  @updatedAt
   // notes for update function
   sale           Boolean?  @default(false)
-  discountAmount Float?
+  discountAmount Float? @default(0)
   // relation tables
   providers      provider  @relation(fields: [providerId], references: [id])
   providerId     Int

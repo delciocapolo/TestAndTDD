@@ -1,49 +1,42 @@
 import { PrismaClient } from "@prisma/client";
-
-interface IProvider {
-  id?: number;
-  name: string;
-  email: string;
-  adressBank: string;
-}
-
-interface ICar {
-  numberPlate?: string;
-  name: string;
-  model: string;
-  releaseAt?: string;
-  price: number;
-  description?: string;
-  // notes for update function
-  sold?: boolean;
-  sale?: boolean;
-  discountAmount?: number;
-  // relation tables
-  providerId: number;
-}
-
-interface IBuyer {
-  id?: number;
-  name: string;
-  email: string;
-  countCar?: number;
-  saled?: boolean;
-  carId: string;
-}
-
-interface ISoldCar {
-  providerId: number;
-  carId: string;
-  buyerId: number;
-}
+import { debuglog, DebugLogger } from "node:util";
+import {
+  IProvider,
+  IBuyer,
+  ICar,
+  ISoldCar,
+  IPromoteCar,
+} from "./interfaces.module";
 
 class Stand {
-  prisma: PrismaClient;
+  public prisma: PrismaClient;
+  private log: DebugLogger;
+
   constructor() {
     this.prisma = new PrismaClient();
+    this.log = debuglog("database-stand", (debug) => {
+      debug("DISPLAY THE LOGS");
+    });
   }
 
   async createProvider({ name, email, adressBank }: IProvider) {
+    const providerExists = await this.prisma["provider"].findUnique({
+      where: {
+        email,
+      },
+      select: {
+        name: true,
+        email: true,
+        createdAt: true,
+        adressBank: false,
+      },
+    });
+
+    if (providerExists) {
+      this.log("Provider already exists!\n");
+      return providerExists;
+    }
+
     const data: IProvider = {
       name,
       email,
@@ -53,7 +46,7 @@ class Stand {
       data,
     });
 
-    console.log(provider);
+    return { ...provider, adressBank: "secret" };
   }
 
   async createCar({
@@ -91,7 +84,7 @@ class Stand {
       },
     });
 
-    console.log(car);
+    return car;
   }
 
   async createBuyer({
@@ -112,7 +105,7 @@ class Stand {
       throw new Error("Car don't exists!");
     }
 
-    const { sold, sale: saleCar, numberPlate } = car!;
+    const { sold, sale: saleCar, numberPlate } = car;
 
     if (sold) {
       throw new Error("The car was sold!");
@@ -122,6 +115,22 @@ class Stand {
       throw new Error(
         "The is not on sale, so the buyer should not be discounted!"
       );
+    }
+
+    const buyerExists = await this.prisma["buyer"].findUnique({
+      where: {
+        email,
+      },
+    });
+
+    if (buyerExists) {
+      const { id: buyerId } = buyerExists;
+      const sellCar = await this.sellCar({
+        buyerId,
+        carId,
+      });
+
+      return sellCar;
     }
 
     const buyer = await this.prisma["buyer"].create({
@@ -138,14 +147,10 @@ class Stand {
       },
     });
 
-    console.log(buyer);
+    return buyer;
   }
 
-  async promoteCar({
-    sale = true,
-    discountAmount,
-    numberPlate,
-  }: Pick<ICar, "sale" | "discountAmount" | "numberPlate">) {
+  async promoteCar({ sale = true, discountAmount, numberPlate }: IPromoteCar) {
     // check if car exists
     const availableCar = await this.prisma["car"].findUnique({
       where: {
@@ -155,6 +160,12 @@ class Stand {
 
     if (availableCar === null) {
       throw new Error("The Car don't exists!");
+    }
+
+    const { sale: alreadyInsale } = availableCar;
+
+    if (alreadyInsale) {
+      throw new Error("The car already is in sale!");
     }
 
     const updatedCar = await this.prisma["car"].update({
@@ -167,7 +178,7 @@ class Stand {
       },
     });
 
-    console.log(updatedCar);
+    return updatedCar;
   }
 
   async sellCar({ carId, buyerId }: ISoldCar) {
@@ -198,13 +209,88 @@ class Stand {
     const soldCar = await this.prisma["car"].update({
       data: {
         sold: true,
+        sale: false,
       },
       where: {
         numberPlate: carId,
       },
     });
 
-    console.log({ soldCar, sellCar });
+    return { sellCar, soldCar };
+  }
+
+  async getAllProviders() {
+    const allProviders = await this.prisma["provider"].findMany({
+      select: {
+        name: true,
+        email: true,
+        createdAt: true,
+      },
+      orderBy: {
+        id: "asc",
+      },
+    });
+
+    return allProviders;
+  }
+
+  async getAllProviderWithCars() {
+    const all = await this.prisma["provider"].findMany({
+      select: {
+        name: true,
+        email: true,
+        createdAt: true,
+        cars: {
+          select: {
+            _count: true,
+            name: true,
+            model: true,
+            description: true,
+            price: true,
+            releaseAt: true,
+            sale: true,
+            discountAmount: true,
+            sold: true,
+            createdAt: true,
+            soldCars: {
+              select: {
+                buyers: {
+                  select: {
+                    name: true,
+                    email: true,
+                    saled: true,
+                    countCar: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      orderBy: {
+        id: "asc",
+      },
+    });
+
+    return all;
+  }
+
+  async getAllCars() {
+    const allCars = await this.prisma["car"].findMany({
+      select: {
+        name: true,
+        model: true,
+        description: true,
+        releaseAt: true,
+        price: true,
+        sale: true,
+        discountAmount: true,
+        sold: true,
+        createdAt: true,
+      },
+    });
+
+    return allCars;
   }
 }
 

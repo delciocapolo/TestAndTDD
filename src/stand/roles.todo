@@ -4,7 +4,7 @@ Regras:
     [x] cadastrar carro(que provedor pretenda vender)
     [x] cadastrar consumidor ou comprador
     [x] promover um carro
-    [] vender carro
+    [x] vender carro
 
 Features:
     Car:
