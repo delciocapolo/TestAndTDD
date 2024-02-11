@@ -27,3 +27,4 @@ ts-jest can create the configuration file for you automatically: <br>
 1.2 [ts-jest](https://kulshekhar.github.io/ts-jest/docs/getting-started/installation/)
 2. Installing prisma: [Prisma Set up](https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch/relational-databases-typescript-postgresql)
 3. [TDD](https://www.treinaweb.com.br/blog/afinal-o-que-e-tdd)
+4. [Debug Log](https://nodejs.org/api/util.html#debuglogenabled)
