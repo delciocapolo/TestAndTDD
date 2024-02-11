@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "test": "NODE_DEBUG=database-stand,test npx jest --watch --no-cache",
-    "dev": "NODE_DEBUG=database-stand tsnd --respawn src/util/encrypt.ts --ignore-watch ./node_modules",
+    "dev": "NODE_DEBUG=server,database-stand tsnd --respawn src/server.ts --ignore-watch ./node_modules",
     "syncdb": "npx prisma generate && npx prisma db push"
   },
   "repository": {
@@ -28,6 +28,7 @@
     "@jest/globals": "^29.7.0",
     "@types/node": "^20.11.16",
     "jest": "^29.7.0",
+    "nyc": "^15.1.0",
     "prisma": "^5.9.1",
     "ts-jest": "^29.1.2",
     "ts-node-dev": "^2.0.0",
