@@ -11,13 +11,13 @@ datasource db {
 }
 
 model provider {
-  id         Int      @id @default(autoincrement())
-  name       String   @unique
-  email      String   @unique
-  adressBank String   @unique
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  cars       car[]
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  email     String   @unique
+  password  String
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
+  cars      car[]
 }
 
 model car {
@@ -28,11 +28,11 @@ model car {
   price          Float
   description    String?   @default("")
   sold           Boolean   @default(false)
-  createdAt      DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
+  createdAt      DateTime?  @default(now())
+  updatedAt      DateTime?  @updatedAt
   // notes for update function
   sale           Boolean?  @default(false)
-  discountAmount Float? @default(0)
+  discountAmount Float?    @default(0)
   // relation tables
   providers      provider  @relation(fields: [providerId], references: [id])
   providerId     Int
@@ -46,19 +46,19 @@ model buyer {
   email     String    @unique
   countCar  Int       @default(1)
   saled     Boolean?  @default(false)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime?  @default(now())
+  updatedAt DateTime?  @updatedAt
   cars      car       @relation(fields: [carId], references: [numberPlate])
   carId     String
   soldCars  soldCar[]
 }
 
 model soldCar {
-  id      Int    @id @default(autoincrement())
-  buyers  buyer  @relation(fields: [buyerId], references: [id])
-  buyerId Int
-  cars    car    @relation(fields: [carId], references: [numberPlate])
-  carId   String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        Int      @id @default(autoincrement())
+  buyers    buyer    @relation(fields: [buyerId], references: [id])
+  buyerId   Int
+  cars      car      @relation(fields: [carId], references: [numberPlate])
+  carId     String
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @updatedAt
 }

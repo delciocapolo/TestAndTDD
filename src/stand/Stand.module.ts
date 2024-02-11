@@ -7,6 +7,7 @@ import {
   ISoldCar,
   IPromoteCar,
 } from "./interfaces.module";
+import { generateHash } from "../util/encrypt";
 
 class Stand {
   public prisma: PrismaClient;
@@ -14,12 +15,11 @@ class Stand {
 
   constructor() {
     this.prisma = new PrismaClient();
-    this.log = debuglog("database-stand", (debug) => {
-      debug("DISPLAY THE LOGS");
-    });
+    this.log = debuglog("database-stand");
   }
 
-  async createProvider({ name, email, adressBank }: IProvider) {
+  async createProvider(dataProvider: IProvider) {
+    const { email } = dataProvider;
     const providerExists = await this.prisma["provider"].findUnique({
       where: {
         email,
@@ -28,7 +28,6 @@ class Stand {
         name: true,
         email: true,
         createdAt: true,
-        adressBank: false,
       },
     });
 
@@ -37,16 +36,16 @@ class Stand {
       return providerExists;
     }
 
-    const data: IProvider = {
-      name,
-      email,
-      adressBank,
-    };
+    const { name, password } = dataProvider;
     const provider = await this.prisma["provider"].create({
-      data,
+      data: {
+        name,
+        email,
+        password: generateHash(password),
+      },
     });
 
-    return { ...provider, adressBank: "secret" };
+    return provider;
   }
 
   async createCar({
