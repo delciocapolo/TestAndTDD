@@ -1,45 +1,51 @@
 import { IncomingMessage, ServerResponse } from "node:http";
 import * as URL from "node:url";
 import { debuglog } from "node:util";
+import { tranformerUrl } from "../util/clearerUrl";
+import { providerController } from "./providerController";
 
 const log = debuglog("server");
 
 export const serverController = (req: IncomingMessage, res: ServerResponse) => {
   const { search, query, pathname, path } = URL.parse(req.url!, true);
-  const urls = [
-    {
-      name: 1,
-      url: "/api",
+
+  // definindo as rotas
+  const urls = {
+    api: {
+      url: "api",
     },
-    {
-      name: 2,
-      url: "/api/provider",
+    provider: {
+      url: "api/provider",
     },
-    {
-      name: 3,
-      url: "/api/buyer",
+    buyer: {
+      url: "api/buyer",
     },
-    {
-      name: 4,
-      url: "/api/car",
+    car: {
+      url: "api/car",
     },
-  ];
+  };
 
   const params = [];
-  for (let { url } of urls) {
+  const urlValues = Object.values(urls);
+  const urlServer = tranformerUrl(pathname!);
+
+  for (let { url } of urlValues) {
     if (url.includes(":")) {
       params.push({ url, position: url.indexOf(":") });
     }
   }
 
-  // if (!urls.includes(req.url!)) {
-  //   return res
-  //     .writeHead(501, { "Content-Type": "application/json" })
-  //     .end({ message: "Route not defined" });
-  // }
+  console.log(params);
 
-  if (search !== null) {
-    if (pathname === "/api/provider" && req.method === "GET") {
-    }
+  if (urlValues.every(({ url }) => url !== urlServer)) {
+    return res
+      .writeHead(501, { "Content-Type": "application/json" })
+      .end(JSON.stringify({ message: "Route not defined" }));
+  }
+
+  if (urlServer === urls["provider"].url) {
+    providerController(req, res, {
+      query,
+    });
   }
 };

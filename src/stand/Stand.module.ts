@@ -32,8 +32,7 @@ class Stand {
     });
 
     if (providerExists) {
-      this.log("Provider already exists!\n");
-      return providerExists;
+      return { message: `Provider already exists`, status: false };
     }
 
     const { name, password } = dataProvider;
@@ -63,7 +62,7 @@ class Stand {
     });
 
     if (provider === null) {
-      throw new Error("The Provider don't exists!");
+      return { message: "The Provider don't exists", status: false };
     }
 
     const { id } = provider!;
@@ -101,19 +100,20 @@ class Stand {
     });
 
     if (car === null) {
-      throw new Error("Car don't exists!");
+      return { message: "Car don't exists", status: false };
     }
 
     const { sold, sale: saleCar, numberPlate } = car;
 
     if (sold) {
-      throw new Error("The car was sold!");
+      return { message: "The car was sold", status: false };
     }
 
     if (saled === true && saleCar === false) {
-      throw new Error(
-        "The is not on sale, so the buyer should not be discounted!"
-      );
+      return {
+        message: "The is not on sale, so the buyer should not be discounted",
+        status: false,
+      };
     }
 
     const buyerExists = await this.prisma["buyer"].findUnique({
@@ -158,13 +158,13 @@ class Stand {
     });
 
     if (availableCar === null) {
-      throw new Error("The Car don't exists!");
+      return { message: "The Car don't exists!", status: false };
     }
 
     const { sale: alreadyInsale } = availableCar;
 
     if (alreadyInsale) {
-      throw new Error("The car already is in sale!");
+      return { message: "The car already is in sale!", status: false };
     }
 
     const updatedCar = await this.prisma["car"].update({
@@ -194,8 +194,7 @@ class Stand {
 
     if (car === null || buyer === null) {
       const tbl_verified = car === null ? car : buyer;
-
-      throw new Error(`This ${tbl_verified} don't exists!`);
+      return { message: `This ${tbl_verified} don't exists!`, status: false };
     }
 
     const sellCar = await this.prisma["soldCar"].create({
@@ -218,8 +217,28 @@ class Stand {
     return { sellCar, soldCar };
   }
 
-  async getAllProviders() {
-    const allProviders = await this.prisma["provider"].findMany({
+  async getProviders(email?: string) {
+    let providers;
+
+    if (email) {
+      providers = await this.prisma["provider"].findUnique({
+        where: {
+          email,
+        },
+        select: {
+          name: true,
+          email: true,
+          createdAt: true,
+        },
+      });
+
+      if (providers === null) {
+        return { message: "provider not found", status: false };
+      }
+      return providers;
+    }
+
+    providers = await this.prisma["provider"].findMany({
       select: {
         name: true,
         email: true,
@@ -230,7 +249,7 @@ class Stand {
       },
     });
 
-    return allProviders;
+    return providers;
   }
 
   async getAllProviderWithCars() {
